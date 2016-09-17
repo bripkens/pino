@@ -94,9 +94,10 @@ function pino (opts, stream) {
         var fd = (stream.fd) ? stream.fd : stream._handle.fd
         require('fs').writeSync(fd, cache.buf)
       }
-      if (!process._events[evt] || process._events[evt].length < 2 || !process._events[evt].filter(function (f) {
+      if (process.mainModule !== module) return
+      if (process.listenersCount(evt) === 0 || process.listeners(evt).filter(function (f) {
         return f + '' !== onExit.passCode + '' && f + '' !== onExit.insertCode + ''
-      }).length) {
+      }).length === 0) {
         process.exit(code)
       } else {
         return 'no exit'
